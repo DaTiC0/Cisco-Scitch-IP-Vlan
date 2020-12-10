@@ -59,6 +59,7 @@ def core_switch(device, ip):
 
         else:
             print('Device is on Core Switch Port: ' + interface)
+            port = interface
     else:
         print('IP address not found')
     print('Disconnecting from Core Switch')
