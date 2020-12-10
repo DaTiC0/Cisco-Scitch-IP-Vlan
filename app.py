@@ -4,7 +4,7 @@ from netmiko import ConnectHandler
 from netmiko.ssh_exception import AuthenticationException
 # mac = ":".join(["%s" % (mac[i:i+2]) for i in range(0, 12, 2)])
 
-# ON SMALL BUSSIONES SWITCHES SET KENGTH TO 0
+# ON SMALL BUSSIONES SWITCHES SET LENGTH TO 0
 #
 # net_connect.send_command('set length 0')
 #
@@ -28,7 +28,7 @@ def core_switch(device, ip):
     net_connect = ConnectHandler(**device)
     net_connect.enable()
     arp = net_connect.send_command('sh ip arp | i {}'.format(ip))
-    # print(arp)
+
     match = re.search('[0-9A-Fa-f]{4}.[0-9A-Fa-f]{4}.[0-9A-Fa-f]{4}', arp)
     # print(match)
     if match:
@@ -45,7 +45,7 @@ def core_switch(device, ip):
         # check if device is on Core Switch
         if cdp:
             switch_ip = re.search('IP address: (\S+)', cdp).groups()[0]
-            # მოდელი საჭიროა დაკავშირების ტიპის შესაცვლელად
+            # Finding Cisco Model for connection type
             switch_model = re.search('Platform: Cisco (\S+)', cdp).groups()[0]
             if switch_model in IOS:  # ამ ტიპის მოდელები
                 device['device_type'] = 'cisco_ios'
@@ -74,8 +74,9 @@ def switch(device, ip, mac):
     try:
         net_connect = ConnectHandler(**device)
     except AuthenticationException as auth:
+        print('-'*20)
         print(str(auth))
-        print('_ _ _ _')
+        print('-'*20)
         username = input('Enter Username:')
         password = input('Enter Password:')
         enable = input('Enter Enable:')
@@ -103,7 +104,7 @@ def switch(device, ip, mac):
 
 
 def main():
-    ip = input('Enter IP For Searching:')
+    ip = input('Enter Computer IP:')
     # print('Enter Core Switch Information')
     # sw_ip = input('Enter IP:')
     # username = input('Enter Username:')
@@ -115,6 +116,7 @@ def main():
     # device['secret'] = enable
 
     port = core_switch(device, ip)
+    # Next Chapter
     print('What to do with this PORT: ' + port)
 
 main()
