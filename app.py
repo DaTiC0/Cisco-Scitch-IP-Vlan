@@ -18,9 +18,9 @@ device = {
 }
 
 # Cisco IOS Switches
-IOS = ['CISCO', 'CISCO2921/K9']
+IOS = ['CISCO', 'CISCO2921/K9', 'WS-C2960-24TC-S'] # Add Your Models
 # Cisco Small Bussiness Switches
-SG = ['SG300-10MP', 'SF300-48PP', 'SF300-24PP']
+SG = ['SG300-10MP', 'SF300-48PP', 'SF300-24PP'] # Add Your Models
 
 
 def core_switch(device, ip):
@@ -42,11 +42,14 @@ def core_switch(device, ip):
         print('Serching CDP Neighbours on Interface: {}'.format(interface))
         cdp = net_connect.send_command(
             'sh cdp neighbors {} detail'.format(interface))
+        print(cdp)
         # check if device is on Core Switch
         if cdp:
             switch_ip = re.search('IP address: (\S+)', cdp).groups()[0]
+            print(switch_ip)
             # Finding Cisco Model for connection type
-            switch_model = re.search('Platform: Cisco (\S+)', cdp).groups()[0]
+            switch_model = re.search('PLATFORM: CISCO (\S+)', cdp.upper()).groups()[0]
+            print(switch_model)
             if switch_model in IOS:  # ამ ტიპის მოდელები
                 device['device_type'] = 'cisco_ios'
             elif switch_model in SG:  # ამ ტიპის მოდელები
@@ -79,7 +82,7 @@ def switch(device, ip, mac):
         print('-'*20)
         username = input('Enter Username:')
         password = input('Enter Password:')
-        enable = input('Enter Enable:')
+        enable = input('Enter Enable if Required:')
         device['username'] = username
         device['password'] = password
         device['secret'] = enable
