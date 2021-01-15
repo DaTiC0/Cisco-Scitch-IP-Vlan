@@ -1,5 +1,6 @@
 import re
 import credentials
+from getpass import getpass
 from netmiko import ConnectHandler
 from netmiko.ssh_exception import AuthenticationException
 # mac = ":".join(["%s" % (mac[i:i+2]) for i in range(0, 12, 2)])
@@ -81,8 +82,8 @@ def switch(device, ip, mac):
         print(str(auth))
         print('-'*20)
         username = input('Enter Username:')
-        password = input('Enter Password:')
-        enable = input('Enter Enable if Required:')
+        password = getpass('Enter Password:')
+        enable = getpass('Enter Enable if Required:')
         device['username'] = username
         device['password'] = password
         device['secret'] = enable
@@ -108,16 +109,7 @@ def switch(device, ip, mac):
 
 def main():
     ip = input('Enter Computer IP:')
-    # print('Enter Core Switch Information')
-    # sw_ip = input('Enter IP:')
-    # username = input('Enter Username:')
-    # password = input('Enter Password:')
-    # enable = input('Enter Enable:')
-    # device['username'] = sw_ip
-    # device['username'] = username
-    # device['password'] = password
-    # device['secret'] = enable
-
+    # Get Info 
     port = core_switch(device, ip)
     # Next Chapter
     print('What to do with this PORT: ' + port)
