@@ -6,9 +6,8 @@ from netmiko.ssh_exception import AuthenticationException
 # mac = ":".join(["%s" % (mac[i:i+2]) for i in range(0, 12, 2)])
 
 # ON SMALL BUSSIONES SWITCHES SET LENGTH TO 0
-#
 # net_connect.send_command('set length 0')
-#
+
 device = {
     'device_type': 'cisco_ios',
     'host': credentials.core,
@@ -51,9 +50,10 @@ def core_switch(device, ip):
             # Finding Cisco Model for connection type
             switch_model = re.search('PLATFORM: CISCO (\S+)', cdp.upper()).groups()[0]
             print(switch_model)
-            if switch_model in IOS:  # ამ ტიპის მოდელები
+            # Get Device Config By model
+            if switch_model in IOS:
                 device['device_type'] = 'cisco_ios'
-            elif switch_model in SG:  # ამ ტიპის მოდელები
+            elif switch_model in SG:
                 device['device_type'] = 'cisco_s300'
             print('Switch Found\nIP Address: {}\nmodel: {}'.format(
                 switch_ip, switch_model))
