@@ -1,0 +1,19 @@
+-------------------------
+Device ID: C2921-GW.nipc.local
+Entry address(es): 
+  IP address: 192.168.81.1
+Platform: Cisco CISCO2921/K9,  Capabilities: Router Source-Route-Bridge Switch 
+Interface: GigabitEthernet0/1,  Port ID (outgoing port): GigabitEthernet0/0
+Holdtime : 143 sec
+
+Version :
+Cisco IOS Software, C2900 Software (C2900-UNIVERSALK9-M), Version 15.6(3)M3, RELEASE SOFTWARE (fc2)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2017 by Cisco Systems, Inc.
+Compiled Wed 26-Jul-17 00:51 by prod_rel_team
+
+advertisement version: 2
+VTP Management Domain: ''
+Duplex: full
+Management address(es): 
+  IP address: 192.168.81.1

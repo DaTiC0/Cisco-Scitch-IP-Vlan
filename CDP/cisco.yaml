@@ -1,0 +1,22 @@
+-------------------------
+Device ID: Cat2960-1-1.nipc.local
+Entry address(es): 
+  IP address: 192.168.80.81
+Platform: cisco WS-C2960-24TC-S,  Capabilities: Switch IGMP 
+Interface: GigabitEthernet0/2,  Port ID (outgoing port): GigabitEthernet0/1
+Holdtime : 175 sec
+
+Version :
+Cisco IOS Software, C2960 Software (C2960-LANLITEK9-M), Version 12.2(55)SE12, RELEASE SOFTWARE (fc2)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2017 by Cisco Systems, Inc.
+Compiled Thu 28-Sep-17 02:53 by prod_rel_team
+
+advertisement version: 2
+Protocol Hello:  OUI=0x00000C, Protocol ID=0x0112; payload len=27, value=00000000FFFFFFFF010221FF000000000000D0C282153F80FF0000
+VTP Management Domain: 'nipc'
+Native VLAN: 1
+Duplex: full
+Management address(es): 
+  IP address: 192.168.80.81
+

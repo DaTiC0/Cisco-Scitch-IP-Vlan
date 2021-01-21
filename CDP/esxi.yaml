@@ -1,0 +1,15 @@
+-------------------------
+Device ID: ESXi02
+Entry address(es): 
+Platform: VMware ESX,  Capabilities: Switch 
+Interface: GigabitEthernet0/9,  Port ID (outgoing port): vmnic1
+Holdtime : 154 sec
+
+Version :
+Releasebuild-17167537
+
+advertisement version: 2
+VTP Management Domain: ''
+Duplex: full
+Management address(es): 
+
