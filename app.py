@@ -45,24 +45,32 @@ def core_switch(device, ip):
         print(cdp)
         # check if device is on Core Switch
         if cdp:
+            device_id = re.search('Device ID: (\S+)', cdp).groups()[0]
+            print(device_id)
+            #first find platform
+            platform = re.search('PLATFORM: (\S+)', cdp.upper()).groups()[0]
+            if platform == 'VMWARE':
+                print('PC or server is on ESXI Server')
+                # return 0
+            elif platform == 'CISCO':
+                # Finding Cisco Model for connection type
+                switch_model = re.search('PLATFORM: CISCO (\S+)', cdp.upper()).groups()[0]
+                print(switch_model)
+                # Get Device Config By model
+                if switch_model in IOS:
+                    device['device_type'] = 'cisco_ios'
+                elif switch_model in SG:
+                    device['device_type'] = 'cisco_s300'
 
-            # Finding Cisco Model for connection type
-            switch_model = re.search('PLATFORM: CISCO (\S+)', cdp.upper()).groups()[0]
-            print(switch_model)
-            # Get Device Config By model
-            if switch_model in IOS:
-                device['device_type'] = 'cisco_ios'
-            elif switch_model in SG:
-                device['device_type'] = 'cisco_s300'
-
-            switch_ip = re.search('IP address: (\S+)', cdp).groups()[0]
-            print(switch_ip)
-            print('Switch Found\nIP Address: {}\nmodel: {}'.format(
-                switch_ip, switch_model))
-            device['host'] = switch_ip
-            port = switch(device, ip, mac)
-            # print('{} Found on Port: {}'.format(ip, pc))
-
+                switch_ip = re.search('IP address: (\S+)', cdp).groups()[0]
+                print(switch_ip)
+                print('Switch Found\nIP Address: {}\nmodel: {}'.format(
+                    switch_ip, switch_model))
+                device['host'] = switch_ip
+                port = switch(device, ip, mac)
+                # print('{} Found on Port: {}'.format(ip, pc))
+            else:
+                print('Not supported platform')
         else:
             print('Device is on Core Switch Port: ' + interface)
             port = interface
