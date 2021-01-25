@@ -1,0 +1,6 @@
+Device ID: Cat2960-1-1.nipc.local
+Entry address(es): 
+  IP address: 192.168.80.81
+Platform: cisco WS-C2960-24TC-S,  Capabilities: Switch IGMP 
+Interface: GigabitEthernet0/2,  Port ID (outgoing port): GigabitEthernet0/1
+Holdtime : 175 sec
