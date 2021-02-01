@@ -19,7 +19,7 @@ device = {
 
 def cisco_decorator(func):
     def wrapper(*args, **kwargs):
-        print('Connecting to switch: {}\nConnection Type: {}'.format(device['host'], device['device_type']))
+        print('\nConnecting to switch: {}\nConnection Type: {}'.format(device['host'], device['device_type']))
         try:
             net_connect = ConnectHandler(**device)
         except AuthenticationException as auth:
@@ -32,44 +32,43 @@ def cisco_decorator(func):
             net_connect = ConnectHandler(**device)
         # enable
         net_connect.enable()
-        # prompt = net_connect.find_prompt()
-        # hostname = prompt.rstrip('>#')
+        prompt = net_connect.find_prompt()
+        hostname = prompt.rstrip('>#')
         # print("Searching For {} on {}".format(ip, hostname))
 
         result = func(net_connect, *args, **kwargs)
 
-        print('Disconnecting.....')
+        print('Disconnecting from: ' + hostname)
         net_connect.disconnect()
 
         return result
     
     return wrapper
 
-
-def core_switch(device, ip):
+@cisco_decorator
+def core_switch(net_connect, device, ip):
     port = 'Port not found'
-    net_connect = ConnectHandler(**device)
-    net_connect.enable()
+    # net_connect = ConnectHandler(**device)
+    # net_connect.enable()
     arp = net_connect.send_command('sh ip arp | i {}'.format(ip))
 
     match = re.search('[0-9A-Fa-f]{4}.[0-9A-Fa-f]{4}.[0-9A-Fa-f]{4}', arp)
     # print(match)
     if match:
         mac = match.group()
-        print('Computer Mac addres: {}'.format(mac))
+        print('Mac addres found: {}'.format(mac))
         table = net_connect.send_command(
             'sh mac address-table address {}'.format(mac))
         # print(table)
         interface = re.search('DYNAMIC\s+(\S+)', table).groups()[0]
-        print('Core Switch Interface: {}'.format(interface))
+        print('On Core Switch Interface: {}'.format(interface))
         print('Serching CDP Neighbours on Interface: {}'.format(interface))
-        cdp = net_connect.send_command(
-            'sh cdp neighbors {} detail'.format(interface))
-        print(cdp)
+        cdp = net_connect.send_command('sh cdp neighbors {} detail'.format(interface))
+        # print(cdp)
         # check if device is on Core Switch
         if cdp:
             device_id = re.search('Device ID: (\S+)', cdp).groups()[0]
-            print(device_id)
+            # print(device_id)
             #first find platform
             platform = re.search('PLATFORM: (\S+)', cdp.upper()).groups()[0]
             if platform == 'VMWARE':
@@ -78,7 +77,7 @@ def core_switch(device, ip):
             elif platform == 'CISCO':
                 # Finding Cisco Model for connection type
                 switch_model = re.search('PLATFORM: CISCO (\S+)', cdp.upper()).groups()[0]
-                print(switch_model)
+                # print(switch_model)
                 # Get Device Config By model
                 if switch_model in config.IOS:
                     device['device_type'] = 'cisco_ios'
@@ -86,9 +85,9 @@ def core_switch(device, ip):
                     device['device_type'] = 'cisco_s300'
 
                 switch_ip = re.search('IP address: (\S+)', cdp).groups()[0]
-                print(switch_ip)
-                print('Switch Found\nIP Address: {}\nmodel: {}'.format(
-                    switch_ip, switch_model))
+                # print(switch_ip)
+                print('\nSwitch Found\nIP Address: {}\nmodel: {}\nDevice ID: {}'.format(
+                    switch_ip, switch_model, device_id))
                 device['host'] = switch_ip
                 port = switch(device, ip, mac)
                 # print('{} Found on Port: {}'.format(ip, pc))
@@ -99,9 +98,9 @@ def core_switch(device, ip):
             port = interface
     else:
         print('IP address not found')
-    print('Disconnecting from Core Switch')
-    net_connect.disconnect()
-    print(port)
+    # print('Disconnecting from Core Switch')
+    # net_connect.disconnect()
+
     return port
 
 @cisco_decorator
@@ -144,7 +143,7 @@ def main():
     # Get Info 
     port = core_switch(device, ip)
     # Next Chapter
-    print(type(port))
+
     print('What to do with this PORT: ' + port)
 
 main()
