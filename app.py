@@ -17,6 +17,34 @@ device = {
     'secret': config.secret,
 }
 
+def cisco_decorator(func):
+    def wrapper(*args, **kwargs):
+        print('Connecting to switch: {}\nConnection Type: {}'.format(device['host'], device['device_type']))
+        try:
+            net_connect = ConnectHandler(**device)
+        except AuthenticationException as auth:
+            print('-'*20)
+            print(str(auth))
+            print('-'*20)
+            device['username'] = input('Enter Username:')
+            device['password'] = getpass('Enter Password:')
+            device['secret'] = getpass('Enter Enable if Required:')
+            net_connect = ConnectHandler(**device)
+        # enable
+        net_connect.enable()
+        # prompt = net_connect.find_prompt()
+        # hostname = prompt.rstrip('>#')
+        # print("Searching For {} on {}".format(ip, hostname))
+
+        result = func(net_connect, *args, **kwargs)
+
+        print('Disconnecting.....')
+        net_connect.disconnect()
+
+        return result
+    
+    return wrapper
+
 
 def core_switch(device, ip):
     port = 'Port not found'
@@ -73,41 +101,40 @@ def core_switch(device, ip):
         print('IP address not found')
     print('Disconnecting from Core Switch')
     net_connect.disconnect()
-    
+    print(port)
     return port
 
-
-def switch(device, ip, mac):
-    print('Connecting to switch: {}\nConnection Type: {}'.format(
-        device['host'], device['device_type']))
-    try:
-        net_connect = ConnectHandler(**device)
-    except AuthenticationException as auth:
-        print('-'*20)
-        print(str(auth))
-        print('-'*20)
-        username = input('Enter Username:')
-        password = getpass('Enter Password:')
-        enable = getpass('Enter Enable if Required:')
-        device['username'] = username
-        device['password'] = password
-        device['secret'] = enable
-        net_connect = ConnectHandler(**device)
-    # enable
-    net_connect.enable()
-    prompt = net_connect.find_prompt()
-    hostname = prompt.rstrip('>#')
-    print("Searching For {} on {}".format(ip, hostname))
-    interface = net_connect.send_command(
-        'sh mac address-table address {}'.format(mac))
+@cisco_decorator
+def switch(net_connect, device, ip, mac):
+    # print('Connecting to switch: {}\nConnection Type: {}'.format(
+    #     device['host'], device['device_type']))
+    # try:
+    #     net_connect = ConnectHandler(**device)
+    # except AuthenticationException as auth:
+    #     print('-'*20)
+    #     print(str(auth))
+    #     print('-'*20)
+    #     username = input('Enter Username:')
+    #     password = getpass('Enter Password:')
+    #     enable = getpass('Enter Enable if Required:')
+    #     device['username'] = username
+    #     device['password'] = password
+    #     device['secret'] = enable
+    #     net_connect = ConnectHandler(**device)
+    # # enable
+    # net_connect.enable()
+    # prompt = net_connect.find_prompt()
+    # hostname = prompt.rstrip('>#')
+    # print("Searching For {} on {}".format(ip, hostname))
+    interface = net_connect.send_command('sh mac address-table address {}'.format(mac))
     port = 'Not Found'
     if device['device_type'] == 'cisco_ios':
         port = re.search('DYNAMIC\s+(\S+)', interface).groups()[0]
     elif device['device_type'] == 'cisco_s300':
         port = re.search('(\S+)\s+dynamic', interface).groups()[0]
     print('{} Found on Port: {}'.format(ip, port))
-    print('Disconnecting from: ' + hostname)
-    net_connect.disconnect()
+    # print('Disconnecting from: ' + hostname)
+    # net_connect.disconnect()
 
     return port
 
@@ -117,6 +144,7 @@ def main():
     # Get Info 
     port = core_switch(device, ip)
     # Next Chapter
+    print(type(port))
     print('What to do with this PORT: ' + port)
 
 main()
