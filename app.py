@@ -27,11 +27,9 @@ def cisco_decorator(func):
             device['password'] = getpass('Enter Password:')
             device['secret'] = getpass('Enter Enable if Required:')
             net_connect = ConnectHandler(**device)
-        # enable
         net_connect.enable()
         prompt = net_connect.find_prompt()
         hostname = prompt.rstrip('>#')
-        # print("Searching For {} on {}".format(ip, hostname))
 
         result = func(net_connect, *args, **kwargs)
 
@@ -45,27 +43,20 @@ def cisco_decorator(func):
 @cisco_decorator
 def core_switch(net_connect, device, ip):
     port = 'Port not found'
-    # net_connect = ConnectHandler(**device)
-    # net_connect.enable()
     arp = net_connect.send_command('sh ip arp | i {}'.format(ip))
-
     match = re.search('[0-9A-Fa-f]{4}.[0-9A-Fa-f]{4}.[0-9A-Fa-f]{4}', arp)
-    # print(match)
+    # check if device found
     if match:
         mac = match.group()
         print('Mac addres found: {}'.format(mac))
-        table = net_connect.send_command(
-            'sh mac address-table address {}'.format(mac))
-        # print(table)
+        table = net_connect.send_command('sh mac address-table address {}'.format(mac))
         interface = re.search('DYNAMIC\s+(\S+)', table).groups()[0]
-        print('On Core Switch Interface: {}'.format(interface))
+        print('Core Switch Interface: {}'.format(interface))
         print('Serching CDP Neighbours on Interface: {}'.format(interface))
         cdp = net_connect.send_command('sh cdp neighbors {} detail'.format(interface))
-        # print(cdp)
         # check if device is on Core Switch
         if cdp:
             device_id = re.search('Device ID: (\S+)', cdp).groups()[0]
-            # print(device_id)
             #first find platform
             platform = re.search('PLATFORM: (\S+)', cdp.upper()).groups()[0]
             if platform == 'VMWARE':
@@ -74,7 +65,6 @@ def core_switch(net_connect, device, ip):
             elif platform == 'CISCO':
                 # Finding Cisco Model for connection type
                 switch_model = re.search('PLATFORM: CISCO (\S+)', cdp.upper()).groups()[0]
-                # print(switch_model)
                 # Get Device Config By model
                 if switch_model in config.IOS:
                     device['device_type'] = 'cisco_ios'
@@ -82,9 +72,7 @@ def core_switch(net_connect, device, ip):
                     device['device_type'] = 'cisco_s300'
 
                 switch_ip = re.search('IP address: (\S+)', cdp).groups()[0]
-                # print(switch_ip)
-                print('\nSwitch Found\nIP Address: {}\nmodel: {}\nDevice ID: {}'.format(
-                    switch_ip, switch_model, device_id))
+                print('\nSwitch Found\nIP Address: {}\nmodel: {}\nDevice ID: {}'.format(switch_ip, switch_model, device_id))
                 device['host'] = switch_ip
                 port = switch(device, ip, mac)
                 # print('{} Found on Port: {}'.format(ip, pc))
@@ -95,33 +83,12 @@ def core_switch(net_connect, device, ip):
             port = interface
     else:
         print('IP address not found')
-    # print('Disconnecting from Core Switch')
-    # net_connect.disconnect()
+
 
     return port
 
 @cisco_decorator
 def switch(net_connect, device, ip, mac):
-    # print('Connecting to switch: {}\nConnection Type: {}'.format(
-    #     device['host'], device['device_type']))
-    # try:
-    #     net_connect = ConnectHandler(**device)
-    # except AuthenticationException as auth:
-    #     print('-'*20)
-    #     print(str(auth))
-    #     print('-'*20)
-    #     username = input('Enter Username:')
-    #     password = getpass('Enter Password:')
-    #     enable = getpass('Enter Enable if Required:')
-    #     device['username'] = username
-    #     device['password'] = password
-    #     device['secret'] = enable
-    #     net_connect = ConnectHandler(**device)
-    # # enable
-    # net_connect.enable()
-    # prompt = net_connect.find_prompt()
-    # hostname = prompt.rstrip('>#')
-    # print("Searching For {} on {}".format(ip, hostname))
     interface = net_connect.send_command('sh mac address-table address {}'.format(mac))
     port = 'Not Found'
     if device['device_type'] == 'cisco_ios':
@@ -129,8 +96,7 @@ def switch(net_connect, device, ip, mac):
     elif device['device_type'] == 'cisco_s300':
         port = re.search('(\S+)\s+dynamic', interface).groups()[0]
     print('{} Found on Port: {}'.format(ip, port))
-    # print('Disconnecting from: ' + hostname)
-    # net_connect.disconnect()
+
 
     return port
 
