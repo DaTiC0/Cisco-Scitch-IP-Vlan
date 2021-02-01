@@ -1,5 +1,5 @@
 import re
-import credentials
+import config
 from getpass import getpass
 from netmiko import ConnectHandler
 from netmiko.ssh_exception import AuthenticationException
@@ -10,17 +10,12 @@ from netmiko.ssh_exception import AuthenticationException
 
 device = {
     'device_type': 'cisco_ios',
-    'host': credentials.core,
-    'username': credentials.username,
-    'password': credentials.password,
+    'host': config.core,
+    'username': config.username,
+    'password': config.password,
     'port': 22,
-    'secret': credentials.secret,
+    'secret': config.secret,
 }
-
-# Cisco IOS Switches
-IOS = ['CISCO', 'CISCO2921/K9', 'WS-C2960-24TC-S'] # Add Your Models
-# Cisco Small Bussiness Switches
-SG = ['SG300-10MP', 'SF300-48PP', 'SF300-24PP'] # Add Your Models
 
 
 def core_switch(device, ip):
@@ -57,9 +52,9 @@ def core_switch(device, ip):
                 switch_model = re.search('PLATFORM: CISCO (\S+)', cdp.upper()).groups()[0]
                 print(switch_model)
                 # Get Device Config By model
-                if switch_model in IOS:
+                if switch_model in config.IOS:
                     device['device_type'] = 'cisco_ios'
-                elif switch_model in SG:
+                elif switch_model in config.SG:
                     device['device_type'] = 'cisco_s300'
 
                 switch_ip = re.search('IP address: (\S+)', cdp).groups()[0]
