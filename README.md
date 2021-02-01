@@ -17,4 +17,6 @@ Vlan change staff not implemented
 
 ### ON SMALL BUSSIONES SWITCHES SET LENGTH TO 0
 
-- net_connect.send_command('set length 0')
+```python
+net_connect.send_command('set length 0')
+```
