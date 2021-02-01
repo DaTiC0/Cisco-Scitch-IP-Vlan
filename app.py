@@ -5,9 +5,6 @@ from netmiko import ConnectHandler
 from netmiko.ssh_exception import AuthenticationException
 # mac = ":".join(["%s" % (mac[i:i+2]) for i in range(0, 12, 2)])
 
-# ON SMALL BUSSIONES SWITCHES SET LENGTH TO 0
-# net_connect.send_command('set length 0')
-
 device = {
     'device_type': 'cisco_ios',
     'host': config.core,

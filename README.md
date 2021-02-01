@@ -14,3 +14,7 @@ Vlan change staff not implemented
 - There must be one Core switch and other switches connected to this switch! not to each other
 - Create credentials.py from credentials_example.py
 - Install netmiko module `pip install netmiko` or from folder run `pip install -r requirements.txt`
+
+### ON SMALL BUSSIONES SWITCHES SET LENGTH TO 0
+
+- net_connect.send_command('set length 0')
