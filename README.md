@@ -14,3 +14,12 @@ Vlan change staff not implemented
 - There must be one Core switch and other switches connected to this switch! not to each other
 - Create credentials.py from credentials_example.py
 - Install netmiko module `pip install netmiko` or from folder run `pip install -r requirements.txt`
+
+## NAPALM
+
+### napalm-ios dependencies
+
+Ubuntu and Debian
+`sudo apt-get install -y --force-yes libssl-dev libffi-dev python-dev python-cffi`
+RedHat and CentOS
+`sudo yum install -y python-pip gcc openssl openssl-devel libffi-devel python-devel`
